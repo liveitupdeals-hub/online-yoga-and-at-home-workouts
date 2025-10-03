@@ -32,14 +32,57 @@
             transform: translateY(6px);
             box-shadow: none;
         }
+        /* Style for the overlay modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: none; /* Hidden by default */
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            max-width: 450px;
+            width: 90%;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
+    
+    <!-- Modal for Download/Affiliate Redirect -->
+    <div id="downloadModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="text-3xl font-bold text-indigo-700 mb-4">Success!</h3>
+            <p class="text-gray-600 mb-6">Your guide is ready. Click below to download the PDF, then proceed to claim your 7-Day Free Trial!</p>
+            
+            <a id="guideDownloadLink" href="Benefits-of-Yoga-as-Functional-Strength-Training.pdf" download="Bulldog-Yoga-Guide.pdf"
+               class="block w-full bg-green-600 text-white font-extrabold text-lg py-3 rounded-lg shadow-md hover:bg-green-700 transition duration-150 mb-4"
+               onclick="document.getElementById('downloadModal').style.display = 'none';">
+                1. Download Your Free Guide
+            </a>
+            
+            <button id="trialRedirectButton" 
+                    class="block w-full bg-bulldog-red text-white font-extrabold text-xl py-3 rounded-lg btn-shadow transition duration-150 ease-in-out uppercase tracking-wider">
+                2. Claim 7-Day Free Trial
+            </button>
+        </div>
+    </div>
+
+
     <div class="min-h-screen flex flex-col items-center">
 
         <!-- Header/Affiliate Bar -->
         <header class="w-full bg-indigo-800 text-white p-3 text-center text-sm font-semibold">
-            🚨 EXCLUSIVE REDDIT FREEBIE: 7-Day Access to ALL Classes! (Affiliate Offer)
+            🚨 EXCLUSIVE REDDIT FREEBIE: FREE Guide + 7-Day Trial! (Affiliate Offer)
         </header>
 
         <!-- Hero Section -->
@@ -55,32 +98,44 @@
                     Tired of quiet, intimidating studios? Bulldog is high-energy, music-driven yoga that's all fitness and zero pretense. It's time to feel the burn.
                 </p>
 
-                <!-- CTA Form Mockup -->
+                <!-- CTA Form (Now for Email Capture) -->
                 <div class="p-6 bg-white rounded-xl shadow-lg border border-gray-100">
-                    <h2 class="text-2xl font-bold mb-4 text-center text-indigo-700">Claim Your Free 7-Day Trial</h2>
-                    <form onsubmit="redirectToAffiliate(event)" class="space-y-4">
+                    <h2 class="text-2xl font-bold mb-4 text-center text-indigo-700">Get the Guide & Free Trial Access!</h2>
+                    <form onsubmit="handleLeadCapture(event)" id="leadForm" class="space-y-4">
                         <input
                             type="email"
-                            placeholder="Enter your best email (e.g., u/yourname@reddit.com)"
+                            placeholder="Enter your best email to receive the guide"
                             required
                             class="w-full px-5 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-bulldog-red focus:border-bulldog-red text-lg"
                             id="affiliate-email-input"
                         >
                         <button
                             type="submit"
+                            id="formSubmitButton"
                             class="w-full bg-bulldog-red text-white font-extrabold text-xl py-4 rounded-xl btn-shadow transition duration-150 ease-in-out uppercase tracking-wider"
                         >
-                            Start the Free Trial Now
+                            Yes, I Want My Guide
                         </button>
                     </form>
-                    <p class="text-center text-xs text-gray-500 mt-3">No credit card required for the free trial. Cancel anytime.</p>
+                    <p class="text-center text-xs text-gray-500 mt-3">We'll email you the guide and grant immediate free trial access.</p>
                 </div>
             </div>
 
-            <!-- Right: Mockup Image/Visual (Placeholder) -->
+            <!-- Right: High-Energy Video -->
             <div class="md:w-1/2 w-full">
-                <div class="w-full bg-gray-200 rounded-2xl overflow-hidden shadow-2xl aspect-video flex items-center justify-center p-8">
-                    <img src="https://placehold.co/600x400/312e81/ffffff?text=High-Energy+Online+Yoga" alt="Bulldog Yoga high-energy online class mockup" class="w-full h-full object-cover rounded-xl" onerror="this.onerror=null;this.src='https://placehold.co/600x400/312e81/ffffff?text=High-Energy+Online+Yoga';" />
+                <!-- Video container with responsive aspect ratio -->
+                <div class="w-full rounded-2xl overflow-hidden shadow-2xl aspect-video">
+                    <video 
+                        autoplay 
+                        loop 
+                        muted 
+                        playsinline 
+                        class="w-full h-full object-cover" 
+                        poster="https://placehold.co/600x400/312e81/ffffff?text=High-Energy+Online+Yoga+Preview"
+                    >
+                        <source src="3735542-hd_1920_1080_25fps.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
                 </div>
                 <p class="text-center text-sm text-gray-500 mt-2">100s of classes. Stream anywhere.</p>
             </div>
@@ -128,6 +183,14 @@
                 </div>
             </div>
         </section>
+        
+        <!-- Free Guide Section - Added for prominence -->
+        <section class="w-full bg-gray-100 py-10">
+            <div class="max-w-xl mx-auto px-4 text-center">
+                <h2 class="text-2xl font-extrabold text-gray-900 mb-3">🔥 BONUS: Get the Exclusive Functional Strength Guide FREE!</h2>
+                <p class="text-lg text-gray-600">Enter your email above to unlock the PDF: **"Benefits of Yoga as Functional Strength Training."**</p>
+            </div>
+        </section>
 
         <!-- Secondary CTA -->
         <section class="w-full py-12 bg-indigo-700">
@@ -146,7 +209,7 @@
         <!-- Footer and Disclosure -->
         <footer class="w-full bg-gray-800 p-8 text-center">
             <p class="text-sm text-gray-400 mb-2">
-                &copy; <span id="current-year"></span> Liveitup Deals.officially affiliated with Bulldog Yoga.
+                &copy; <span id="current-year"></span> Liveitup Deals. Not officially affiliated with Bulldog Yoga.
             </p>
             <p class="text-xs text-gray-500 max-w-xl mx-auto">
                 *Affiliate Disclosure: This page contains affiliate links. If you sign up for the free trial and later purchase a paid subscription, I may earn a commission at no extra cost to you. I only promote products I genuinely believe in.
@@ -156,43 +219,71 @@
     </div>
 
     <script>
-        // Get the current year for the copyright date
+        // --- CONFIGURATION ---
+        // CRITICAL STEP: AFFILIATE LINK
+        const affiliateUrl = 'https://bulldogonline.com/?cjdata=MXxOfDB8WXww&cjevent=fb265cb3a09811f0832b01020a82b821'; 
+
+        // CRITICAL STEP: LEAD MAGNET PDF FILE NAME
+        const pdfFileName = 'Benefits-of-Yoga-as-Functional-Strength-Training.pdf';
+
+        // --- GLOBAL SETUP ---
         document.getElementById('current-year').textContent = new Date().getFullYear();
+        document.getElementById('secondary-affiliate-link').onclick = redirectToAffiliate;
+        document.getElementById('trialRedirectButton').onclick = redirectToAffiliate;
+        document.getElementById('guideDownloadLink').setAttribute('href', pdfFileName);
+        
+        /**
+         * 1. Handles the form submission (the lead capture step).
+         * 2. Simulates saving the lead (in a real scenario, this would involve an API call).
+         * 3. Displays the modal to offer the download and the trial redirect.
+         */
+        function handleLeadCapture(event) {
+            event.preventDefault();
+
+            const emailInput = document.getElementById('affiliate-email-input');
+            const button = document.getElementById('formSubmitButton');
+            const email = emailInput.value;
+            
+            // Basic UI feedback
+            button.textContent = 'Processing...';
+            button.disabled = true;
+
+            // --- SIMULATE LEAD SAVE ---
+            // In a real application, you would send 'email' to a service like Mailchimp or Firebase here.
+            console.log(`[LEAD CAPTURED]: ${email} - Ready for download.`);
+            
+            // Delay to simulate processing time
+            setTimeout(() => {
+                // Show the modal
+                document.getElementById('downloadModal').style.display = 'flex';
+                
+                // Reset form button appearance
+                button.textContent = 'Yes, I Want My Guide';
+                button.disabled = false;
+            }, 500);
+        }
 
         /**
-         * Simulates form submission and redirects to the affiliate link.
-         * The email input is purely for user engagement (to make them feel like they're "claiming" the offer).
+         * Redirects the user to the main affiliate link.
+         * Used by the button inside the modal and the secondary CTA.
          */
         function redirectToAffiliate(event) {
             event.preventDefault();
+            // Close the modal if it's open
+            document.getElementById('downloadModal').style.display = 'none';
 
-            const button = event.target.closest('form') ? event.target.closest('form').querySelector('button') : event.target;
-            const originalText = button.textContent;
-            
-            // Basic UI feedback
-            button.textContent = 'Redirecting... Get Ready!';
-            button.disabled = true;
+            const target = event.target;
+            const originalText = target.textContent;
 
-            // In a real implementation, you would track this conversion here.
-            
-            // CRITICAL STEP: AFFILIATE LINK ADDED
-            const affiliateUrl = 'https://mavely.app.link/e/kJuSRRZNaXb'; 
-            
-            if (affiliateUrl === 'https://mavely.app.link/e/kJuSRRZNaXb') {
-                console.log("Affiliate link is set and ready.");
-            }
+            // UI feedback
+            target.textContent = 'Redirecting...';
+            target.disabled = true;
 
+            // Redirect the user to the affiliate link after a small delay
             setTimeout(() => {
-                window.open(affiliateUrl, '_self'); // Use _self to stay within the current tab, or _blank to open new.
+                window.open(affiliateUrl, '_self'); 
             }, 1000);
         }
-
-        // Apply the affiliate link to the secondary CTA as well
-        document.getElementById('secondary-affiliate-link').onclick = (e) => {
-            e.preventDefault();
-            // Pass the anchor tag itself as the target
-            redirectToAffiliate({ preventDefault: () => e.preventDefault(), target: e.currentTarget });
-        };
 
     </script>
 </body>
