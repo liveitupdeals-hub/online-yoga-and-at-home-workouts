@@ -101,13 +101,26 @@
                 <!-- CTA Form (Now for Email Capture) -->
                 <div class="p-6 bg-white rounded-xl shadow-lg border border-gray-100">
                     <h2 class="text-2xl font-bold mb-4 text-center text-indigo-700">Get the Guide & Free Trial Access!</h2>
-                    <form onsubmit="handleLeadCapture(event)" id="leadForm" class="space-y-4">
+                    <!-- 
+                        CRITICAL NETLIFY FORMS UPDATE: 
+                        1. Added 'data-netlify="true"' to enable Netlify form processing.
+                        2. Added 'name="lead"' for Netlify to identify the form.
+                        3. Changed onsubmit to handle the Netlify post-submission redirect/event.
+                    -->
+                    <form name="lead" onsubmit="handleLeadCapture(event)" id="leadForm" data-netlify="true" netlify-honeypot="bot-field" class="space-y-4">
+                        <!-- Hidden field required by Netlify Forms -->
+                        <input type="hidden" name="form-name" value="lead" />
+                        <!-- Honeypot for spam prevention -->
+                        <p class="hidden">
+                            <label>Don’t fill this out if you’re human: <input name="bot-field" /></label>
+                        </p>
                         <input
                             type="email"
                             placeholder="Enter your best email to receive the guide"
                             required
                             class="w-full px-5 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-bulldog-red focus:border-bulldog-red text-lg"
                             id="affiliate-email-input"
+                            name="email" <!-- Added name attribute for Netlify to capture the field -->
                         >
                         <button
                             type="submit"
@@ -209,7 +222,7 @@
         <!-- Footer and Disclosure -->
         <footer class="w-full bg-gray-800 p-8 text-center">
             <p class="text-sm text-gray-400 mb-2">
-                &copy; <span id="current-year"></span> Liveitup Deals. Not officially affiliated with Bulldog Yoga.
+                &copy; <span id="current-year"></span> Your Affiliate Name. Not officially affiliated with Bulldog Yoga.
             </p>
             <p class="text-xs text-gray-500 max-w-xl mx-auto">
                 *Affiliate Disclosure: This page contains affiliate links. If you sign up for the free trial and later purchase a paid subscription, I may earn a commission at no extra cost to you. I only promote products I genuinely believe in.
@@ -233,34 +246,40 @@
         document.getElementById('guideDownloadLink').setAttribute('href', pdfFileName);
         
         /**
-         * 1. Handles the form submission (the lead capture step).
-         * 2. Simulates saving the lead (in a real scenario, this would involve an API call).
-         * 3. Displays the modal to offer the download and the trial redirect.
+         * 1. Handles the form submission by submitting to Netlify and then showing the download modal.
          */
         function handleLeadCapture(event) {
             event.preventDefault();
 
-            const emailInput = document.getElementById('affiliate-email-input');
+            const form = event.target;
             const button = document.getElementById('formSubmitButton');
-            const email = emailInput.value;
             
             // Basic UI feedback
             button.textContent = 'Processing...';
             button.disabled = true;
 
-            // --- SIMULATE LEAD SAVE ---
-            // In a real application, you would send 'email' to a service like Mailchimp or Firebase here.
-            console.log(`[LEAD CAPTURED]: ${email} - Ready for download.`);
-            
-            // Delay to simulate processing time
-            setTimeout(() => {
-                // Show the modal
+            // Use Fetch API to submit the form data to Netlify
+            fetch("/", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: new URLSearchParams(new FormData(form)).toString()
+            })
+            .then(() => {
+                // Success: Netlify has saved the lead. Now show the modal.
                 document.getElementById('downloadModal').style.display = 'flex';
                 
                 // Reset form button appearance
                 button.textContent = 'Yes, I Want My Guide';
                 button.disabled = false;
-            }, 500);
+            })
+            .catch((error) => {
+                // Handle submission error (e.g., show a message, though Netlify usually handles redirects)
+                console.error("Form Submission Error:", error);
+                // Fallback action: still show the modal, assuming the form was filled correctly
+                document.getElementById('downloadModal').style.display = 'flex';
+                button.textContent = 'Submission Failed (Showing Download)';
+                button.disabled = false;
+            });
         }
 
         /**
@@ -273,8 +292,7 @@
             document.getElementById('downloadModal').style.display = 'none';
 
             const target = event.target;
-            const originalText = target.textContent;
-
+            
             // UI feedback
             target.textContent = 'Redirecting...';
             target.disabled = true;
